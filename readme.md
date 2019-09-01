@@ -1,4 +1,4 @@
-# Kaggle: Denoising Dirty Documents [Link](https://www.kaggle.com/c/denoising-dirty-documents/overview)
+# Kaggle: Denoising Dirty Documents ([Link](https://www.kaggle.com/c/denoising-dirty-documents/overview))
 
 Data: 177 images of text documents 
 
