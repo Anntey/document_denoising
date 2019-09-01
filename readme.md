@@ -8,6 +8,6 @@ Evalution: root mean square error between the cleaned vs actual pixel intensitie
 
 Solution: simple 2D-CNN Autoencoder
 
-Success: 0.088 RMSE
+Success: 0.087 RMSE
 
 ![](predictions.png)
