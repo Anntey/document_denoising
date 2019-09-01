@@ -39,16 +39,15 @@ def load_images(paths):
     for i, path in enumerate(paths):
         img = cv2.imread(path, 0) # 0 to return greyscale image
         img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
-        img = img / 255.0
+        img = img / 255.0 # scale to 0...1
         images.append(img) 
     images = np.array(images, dtype = np.float32)
-    images = np.expand_dims(images, axis = -1)
+    images = np.expand_dims(images, axis = -1) # reshape to (n, h, w, 1)
     return images
 
 x_train = load_images(train_paths_list)
 y_train = load_images(target_paths_list)
 x_test = load_images(test_paths_list)
-
 
 x_train, x_val, y_train, y_val = train_test_split(
         x_train,
@@ -91,8 +90,7 @@ callbacks_list = [
                 monitor = "val_loss",
                 mode = "min",
                 patience = 5,
-                verbose = 1,
-
+                verbose = 1
         )
 ]
 
@@ -109,12 +107,8 @@ fit_log = model.fit(
 # Evaluation #
 ##############
 
-plt.plot(fit_log.history["loss"])
-plt.plot(fit_log.history["val_loss"])
-plt.ylabel("Loss")
-plt.xlabel("Epoch")
-plt.legend(["Train", "Test"], loc = "upper right")
-plt.show()
+fit_log_df = pd.DataFrame(fit_log.history)
+fit_log_df[["loss", "val_loss"]].plot()
 
 ##############
 # Prediction #
@@ -122,8 +116,7 @@ plt.show()
 
 preds = model.predict(x_test)
 
-# visualize 3 test set images and their predictions
-plt.subplots(6, 2, figsize = (15, 20))
+plt.subplots(6, 2, figsize = (8, 12)) # visualize 3 pairs of images
 for i in range(1, 12, 2):
     plt.subplot(6, 2, i)
     plt.imshow(x_test[i].squeeze(), cmap = "gray")
@@ -133,20 +126,22 @@ for i in range(1, 12, 2):
     plt.axis("off")
 plt.tight_layout()    
     
-preds = preds.squeeze() # remove extra dimension
+preds = preds.squeeze() # reshape to (n, h, w)
 
 ids = []
 vals = []
-for i, f in enumerate(test_paths_list):
-    file = os.path.basename(f)
-    imgid = int(file[:-4])
-    test_img = cv2.imread(f, 0)
-    height, width = test_img.shape[0], test_img.shape[1]
-    preds_reshaped = cv2.resize(preds[i], (width, height))
-    for r in range(height):
-        for c in range(width):
-            ids.append(str(imgid)+"_"+str(r + 1)+"_"+str(c + 1))
-            vals.append(preds_reshaped[r, c])
+for i, path in enumerate(test_paths_list):
+    filename = os.path.basename(path) # get filename
+    img_id = int(filename[0:-4]) # remove .png and convert to int
+    test_img = cv2.imread(path, 0) # read img to array
+    height, width = test_img.shape[0], test_img.shape[1] # get original dims
+    preds_reshaped = cv2.resize(preds[i], (width, height)) # reshape prediction
+    for row in range(height):
+        for column in range(width):
+            id_string = f"{img_id}_{row + 1}_{column + 1}"
+            pixel_intensity = preds_reshaped[row, column] # get pixel value from array
+            ids.append(id_string)
+            vals.append(pixel_intensity)
 
 test_df = pd.DataFrame({"id": ids, "value": vals})
 test_df.to_csv("submission.csv", index = False)
