@@ -1,13 +1,13 @@
 # Kaggle: Denoising Dirty Documents ([link](https://www.kaggle.com/c/denoising-dirty-documents/overview))
 
-Data: 177 images of text documents 
+__Data__: 177 images of text documents 
 
-Task: clean the images of noise and artifacts (eg. stains, spots, wrinkles)
+__Task__: clean the images of noise and artifacts (eg. stains, spots, wrinkles)
 
-Evalution: Root Mean Square Error between the cleaned and actual pixel intensities (0...1)
+__Evaluation__: Root Mean Square Error between the cleaned and actual pixel intensities (0...1)
 
-Solution: simple 2D-CNN Autoencoder
+__Solution__: simple 2D-CNN Autoencoder
 
-Success: 0.0870 RMSE
+__Success__: 0.0870 RMSE
 
 ![](predictions.png)
